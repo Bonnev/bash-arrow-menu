@@ -1,8 +1,6 @@
 #!/bin/bash
 
 show_menu() {
-    clear
-    echo "Use arrow keys to navigate, Enter to select:"
     for i in "${!options[@]}"; do
         if [ $i -eq $selected ]; then
             # printf "\e[7m> ${options[i]}\e[0m\n"  # Inverted colors for selected
@@ -16,6 +14,7 @@ show_menu() {
 # Options setup
 options=("Option 1" "Option 2" "Option 3" "Quit")
 selected=0
+menu_lines=${#options[@]}
 
 # Save terminal state and setup
 original_state="$(stty -g)"
@@ -47,6 +46,7 @@ while true; do
             break
             ;;
     esac
+    echo -en "\e[${menu_lines}A"
 done
 
 # Show cursor again
