@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# example usage:
+# ./menu.sh | grep -oE "^[a-zA-Z0-9]+" | xargs -I{} git rev-parse {}
+
 show_menu() {
     for i in "${!options[@]}"; do
         if [ $i -eq $selected ]; then
@@ -55,3 +58,17 @@ printf "\e[?25h" >/dev/tty
 option=("${options[selected]}")
 echo $option
 
+# experiment: ./menu.sh cat {} # should execute cat <option>
+# store all command arguments in a string
+# cmd_template="$*"
+# echo $cmd_template
+# substitute {} for option in cmd_template and execute command
+# cmd="${cmd_template//\{\}/$option}"
+# echo $cmd
+# eval "$cmd"
+
+# experiment: ./menu.sh grep 6c # should execute grep 6c with <option> as input
+# Store all command arguments in an array (this preserves each word separately)
+# cmd=("$@")
+# "${cmd[@]}" <<< "$option"
+# echo "$option" | "${cmd[@]}"
