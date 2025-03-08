@@ -12,7 +12,7 @@ show_menu() {
 }
 
 # Options setup
-options=("Option 1" "Option 2" "Option 3" "Quit")
+readarray -t options < <(git log --oneline | head -n 10)
 selected=0
 menu_lines=${#options[@]}
 
