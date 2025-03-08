@@ -5,7 +5,7 @@
 
 show_menu() {
     for i in "${!options[@]}"; do
-        if [ $i -eq $selected ]; then
+        if [ $i -eq $selected ]; then # show arrow for current selection
             # printf "\e[7m> ${options[i]}\e[0m\n"  # Inverted colors for selected
             printf "> ${options[i]}\n" >/dev/tty
         else
@@ -14,13 +14,14 @@ show_menu() {
     done
 }
 
-# Options setup
-# readarray -t options < <(git log --oneline | head -n 10)
-mapfile -t options
-selected=0
+# readarray -t options < <(git log --oneline | head -n 10) # read options from command
+mapfile -t options # get options from standard input
 menu_lines=${#options[@]}
 
+selected=0
+
 # Save terminal state and setup
+# /dev/tty means terminal output. We use this and not the standard output which will be used when piping the script
 original_state="$(stty -g </dev/tty)"
 trap 'stty "$original_state" </dev/tty' EXIT  # Restore terminal on exit
 stty -icanon -echo </dev/tty # Disable canonical mode and echo
