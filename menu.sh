@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # example usage:
-# ./menu.sh | grep -oE "^[a-zA-Z0-9]+" | xargs -I{} git rev-parse {}
+# git log --oneline | head -n 10 | ./menu.sh | grep -oE "^[a-zA-Z0-9]+" | xargs -I{} git checkout {}
 
 show_menu() {
     for i in "${!options[@]}"; do
@@ -15,14 +15,15 @@ show_menu() {
 }
 
 # Options setup
-readarray -t options < <(git log --oneline | head -n 10)
+# readarray -t options < <(git log --oneline | head -n 10)
+mapfile -t options
 selected=0
 menu_lines=${#options[@]}
 
 # Save terminal state and setup
-original_state="$(stty -g)"
-trap "stty $original_state" EXIT  # Restore terminal on exit
-stty -icanon -echo  # Disable canonical mode and echo
+original_state="$(stty -g </dev/tty)"
+trap 'stty "$original_state" </dev/tty' EXIT  # Restore terminal on exit
+stty -icanon -echo </dev/tty # Disable canonical mode and echo
 
 # Hide cursor
 printf "\e[?25l" >/dev/tty
@@ -31,7 +32,7 @@ printf "\e[?25l" >/dev/tty
 while true; do
     show_menu
     # Read three characters (to capture escape sequences)
-    read -rsn3 key
+    read -rsn3 key </dev/tty
     case "$key" in
         $'\e[A')  # Up arrow
             (( selected-- ))
