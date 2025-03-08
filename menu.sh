@@ -4,9 +4,9 @@ show_menu() {
     for i in "${!options[@]}"; do
         if [ $i -eq $selected ]; then
             # printf "\e[7m> ${options[i]}\e[0m\n"  # Inverted colors for selected
-            printf "> ${options[i]}\n"
+            printf "> ${options[i]}\n" >/dev/tty
         else
-            echo "  ${options[i]}"
+            echo "  ${options[i]}" >/dev/tty
         fi
     done
 }
@@ -22,7 +22,7 @@ trap "stty $original_state" EXIT  # Restore terminal on exit
 stty -icanon -echo  # Disable canonical mode and echo
 
 # Hide cursor
-printf "\e[?25l"
+printf "\e[?25l" >/dev/tty
 
 # Main loop
 while true; do
@@ -46,10 +46,12 @@ while true; do
             break
             ;;
     esac
-    echo -en "\e[${menu_lines}A"
+    echo -en "\e[${menu_lines}A" >/dev/tty
 done
 
 # Show cursor again
-printf "\e[?25h"
+printf "\e[?25h" >/dev/tty
 
-echo "${options[selected]}"
+option=("${options[selected]}")
+echo $option
+
